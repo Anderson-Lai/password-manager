@@ -1,0 +1,9 @@
+[package]
+name = "password_manager"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+aes-gcm = "0.10.3"
+argon2 = "0.5.3"
+rand = "0.8"
