@@ -4,6 +4,7 @@ use aes_gcm::Nonce;
 use rand::RngCore;
 use rand::rngs::OsRng;
 
+// U12 is a length of 12 u8's
 pub fn generate_nonce() -> GenericArray<u8, U12> {
     // for AES-GCM, the nonce is always **12** bytes (12 u8's)
     let mut nonce_bytes = [0 as u8; 12];
