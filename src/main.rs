@@ -1,7 +1,6 @@
 use std::env;
-
 use base64::{engine::general_purpose, Engine};
-use encryption::{decrypt::decrypt_password, encrypt::generate_ciphertext, kdf::generate_secure_key, nonce::generate_nonce, salt::generate_salt};
+use encryption::{decrypt::decrypt_password, encrypt::encrypt_password};
 mod encryption;
 
 fn main() {
@@ -25,18 +24,13 @@ fn debug_main() {
     const MASTER_PASSWORD: &str = "happy birthday";
     const APPLICATION_PASSWORD: &str = "hello123!";
 
-    let salt = generate_salt();
-    let secure_key = generate_secure_key(MASTER_PASSWORD.as_bytes(), &salt);
-    let nonce = generate_nonce();
+    let data = encrypt_password(MASTER_PASSWORD, APPLICATION_PASSWORD); 
+    let data = data.unwrap();
+    println!("{}", data.cipher_text.as_ref().unwrap());
 
-    let encrypted = generate_ciphertext(APPLICATION_PASSWORD, &secure_key.unwrap(), &nonce);
-    let encrypted = encrypted.unwrap();
+    let bytes = general_purpose::STANDARD.decode(data.cipher_text.as_ref().unwrap());
 
-    let bytes = general_purpose::STANDARD.decode(&encrypted);
-
-    println!("{}", encrypted);
-    let decrypted = decrypt_password(MASTER_PASSWORD, &salt, &nonce, bytes.unwrap().as_ref());
-
+    let decrypted = decrypt_password(MASTER_PASSWORD, &data.salt, &data.nonce, bytes.unwrap().as_ref());
     let decrypted = decrypted.unwrap().unwrap();
     println!("{}", decrypted);
 

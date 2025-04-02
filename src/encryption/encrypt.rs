@@ -2,7 +2,7 @@ use aes_gcm::{aead::{consts::U12, generic_array::GenericArray, Aead}, Aes256Gcm,
 use base64::{engine::general_purpose, Engine};
 use super::{kdf::generate_secure_key, nonce::generate_nonce, salt::generate_salt};
 
-pub fn generate_ciphertext(plain_text: &str, secure_key: &[u8; 32], nonce: &GenericArray<u8, U12>) 
+fn generate_ciphertext(plain_text: &str, secure_key: &[u8; 32], nonce: &GenericArray<u8, U12>) 
 -> Option<String>
 {
     // convert to the standard type for AES-GCM
@@ -19,7 +19,25 @@ pub fn generate_ciphertext(plain_text: &str, secure_key: &[u8; 32], nonce: &Gene
     }
 }
 
-fn encrypt_password(master_password: &str, application_password: &str) -> Option<String> {
+pub struct CipherText {
+    pub salt: [u8; 16],
+    pub secure_key: [u8; 32],
+    pub nonce: GenericArray<u8, U12>,
+    pub cipher_text: Option<String>
+}
+
+impl CipherText {
+    pub fn new(salt: [u8; 16], secure_key: [u8; 32], nonce: GenericArray<u8, U12>, cipher_text: Option<String>) -> Self {
+        CipherText {
+            salt,
+            secure_key,
+            nonce,
+            cipher_text
+        }
+    }
+}
+
+pub fn encrypt_password(master_password: &str, application_password: &str) -> Option<CipherText> {
     // generate a salt
     let salt = generate_salt();
 
@@ -37,5 +55,5 @@ fn encrypt_password(master_password: &str, application_password: &str) -> Option
     let nonce = generate_nonce();
 
     // encrypt plain text password using secure key, salt, and nonce
-    generate_ciphertext(application_password, &secure_key, &nonce)
+    Some(CipherText::new(salt, secure_key, nonce, generate_ciphertext(application_password, &secure_key, &nonce)))
 }
