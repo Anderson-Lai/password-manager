@@ -9,11 +9,11 @@ fn decrypt_ciphertext(nonce: &GenericArray<u8, U12>, secure_key: &[u8; 32], ciph
     let cipher_key = GenericArray::from_slice(secure_key);
     let cipher = Aes256Gcm::new(&cipher_key);
 
-    let res = cipher.decrypt(nonce, cipher_text.as_slice());
+    let res = cipher.decrypt(nonce, cipher_text.as_ref());
     match res {
         Ok(v) => Ok(Some(String::from_utf8(v)?)),
         Err(_) => {
-            eprintln!("An error occured whilst decryping the ciphertext!");
+            eprintln!("An error occured whilst decrypting the ciphertext!");
             Ok(None) 
         }
     }
