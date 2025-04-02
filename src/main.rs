@@ -3,5 +3,12 @@ mod encryption;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    println!("{:?}", args);
+
+/*
+    if args.len() <= 1 {
+        todo!("Open GUI");
+    }
+*/
+
+
 }
