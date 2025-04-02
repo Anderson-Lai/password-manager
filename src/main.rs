@@ -4,23 +4,21 @@ use encryption::{decrypt::decrypt_password, encrypt::encrypt_password};
 mod encryption;
 
 fn main() {
-    let _args: Vec<String> = env::args().collect();
+    let args: Vec<String> = env::args().collect();
 
-/*
-    if args.len() <= 1 {
-        todo!("Open GUI");
-    }
-*/
-    
     #[cfg(debug_assertions)]
     {
-        debug_main(); 
+        debug_main(&args); 
         return;
     }
 
+    if args.len() <= 1 {
+        todo!("Open GUI");
+    }
 }
 
-fn debug_main() {
+fn debug_main(_args: &Vec<String>) {
+
     const MASTER_PASSWORD: &str = "happy birthday";
     const APPLICATION_PASSWORD: &str = "hello123!";
 
