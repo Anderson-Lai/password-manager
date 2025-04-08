@@ -18,7 +18,9 @@ pub fn test_encryption_decryption() {
     let nonce = general_purpose::STANDARD.decode(&data.nonce);
     let nonce = GenericArray::from_slice(nonce.as_ref().unwrap());
 
-    let decrypted = decrypt_password(MASTER_PASSWORD, &data.salt, nonce, bytes.unwrap().as_ref());
+    let salt = general_purpose::STANDARD.decode(&data.salt).unwrap();
+
+    let decrypted = decrypt_password(MASTER_PASSWORD, &salt.try_into().expect("failed to convert into [u8; 16]"), nonce, bytes.unwrap().as_ref());
     let decrypted = decrypted.unwrap().unwrap();
     println!("{}", decrypted);
 
