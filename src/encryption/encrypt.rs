@@ -6,16 +6,14 @@ use super::{kdf::generate_secure_key, nonce::generate_nonce, salt::generate_salt
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct EncryptedPassword {
     pub salt: [u8; 16],
-    pub secure_key: [u8; 32],
     pub nonce: String,
     pub cipher_text: Option<String>
 }
 
 impl EncryptedPassword {
-    pub fn new(salt: [u8; 16], secure_key: [u8; 32], nonce: GenericArray<u8, U12>, cipher_text: Option<String>) -> Self {
+    pub fn new(salt: [u8; 16], nonce: GenericArray<u8, U12>, cipher_text: Option<String>) -> Self {
         EncryptedPassword {
             salt,
-            secure_key,
             nonce: general_purpose::STANDARD.encode(nonce.to_vec()),
             cipher_text
         }
@@ -40,7 +38,7 @@ pub fn encrypt_password(master_password: &str, application_password: &str) -> Op
     let nonce = generate_nonce();
 
     // encrypt plain text password using secure key, salt, and nonce
-    Some(EncryptedPassword::new(salt, secure_key, nonce, generate_ciphertext(application_password, &secure_key, &nonce)))
+    Some(EncryptedPassword::new(salt, nonce, generate_ciphertext(application_password, &secure_key, &nonce)))
 }
 
 fn generate_ciphertext(plain_text: &str, secure_key: &[u8; 32], nonce: &GenericArray<u8, U12>) 

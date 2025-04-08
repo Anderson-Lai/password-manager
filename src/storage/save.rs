@@ -22,7 +22,7 @@ pub fn save_passwords_to_disk(passwords: &mut HashMap<String, EncryptedPassword>
     let all_passwords = serde_json::to_string_pretty(&passwords);
     match all_passwords {
         Ok(v) => {
-            let file = OpenOptions::new().read(true).write(true).open(constants::FILE_NAME);
+            let file = OpenOptions::new().write(true).truncate(true).open(constants::FILE_NAME);
             let mut file = match file {
                 Ok(f) => f,
                 Err(_) => {
