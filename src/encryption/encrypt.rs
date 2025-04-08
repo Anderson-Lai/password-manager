@@ -1,43 +1,28 @@
 use aes_gcm::{aead::{consts::U12, generic_array::GenericArray, Aead}, Aes256Gcm, KeyInit};
 use base64::{engine::general_purpose, Engine};
+use serde::{Deserialize, Serialize};
 use super::{kdf::generate_secure_key, nonce::generate_nonce, salt::generate_salt};
 
-fn generate_ciphertext(plain_text: &str, secure_key: &[u8; 32], nonce: &GenericArray<u8, U12>) 
--> Option<String>
-{
-    // convert to the standard type for AES-GCM
-    let cipher_key = GenericArray::from_slice(secure_key);
-    let cipher = Aes256Gcm::new(&cipher_key);
-
-    let res = cipher.encrypt(nonce, plain_text.as_bytes());
-    match res {
-        Ok(v) => Some(general_purpose::STANDARD.encode(v)),
-        Err(_) => {
-            eprintln!("Error while encrypting application password!");
-            None
-        } 
-    }
-}
-
-pub struct CipherText {
+#[derive(Serialize, Deserialize, Clone)]
+pub struct EncryptedPassword {
     pub salt: [u8; 16],
     pub secure_key: [u8; 32],
-    pub nonce: GenericArray<u8, U12>,
+    pub nonce: String,
     pub cipher_text: Option<String>
 }
 
-impl CipherText {
+impl EncryptedPassword {
     pub fn new(salt: [u8; 16], secure_key: [u8; 32], nonce: GenericArray<u8, U12>, cipher_text: Option<String>) -> Self {
-        CipherText {
+        EncryptedPassword {
             salt,
             secure_key,
-            nonce,
+            nonce: general_purpose::STANDARD.encode(nonce.to_vec()),
             cipher_text
         }
     }
 }
 
-pub fn encrypt_password(master_password: &str, application_password: &str) -> Option<CipherText> {
+pub fn encrypt_password(master_password: &str, application_password: &str) -> Option<EncryptedPassword> {
     // generate a salt
     let salt = generate_salt();
 
@@ -55,5 +40,22 @@ pub fn encrypt_password(master_password: &str, application_password: &str) -> Op
     let nonce = generate_nonce();
 
     // encrypt plain text password using secure key, salt, and nonce
-    Some(CipherText::new(salt, secure_key, nonce, generate_ciphertext(application_password, &secure_key, &nonce)))
+    Some(EncryptedPassword::new(salt, secure_key, nonce, generate_ciphertext(application_password, &secure_key, &nonce)))
+}
+
+fn generate_ciphertext(plain_text: &str, secure_key: &[u8; 32], nonce: &GenericArray<u8, U12>) 
+-> Option<String>
+{
+    // convert to the standard type for AES-GCM
+    let cipher_key = GenericArray::from_slice(secure_key);
+    let cipher = Aes256Gcm::new(&cipher_key);
+
+    let res = cipher.encrypt(nonce, plain_text.as_bytes());
+    match res {
+        Ok(v) => Some(general_purpose::STANDARD.encode(v)),
+        Err(_) => {
+            eprintln!("Error while encrypting application password!");
+            None
+        } 
+    }
 }

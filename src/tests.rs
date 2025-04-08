@@ -1,3 +1,4 @@
+use aes_gcm::aead::generic_array::GenericArray;
 use base64::{engine::general_purpose, Engine};
 use crate::encryption::{decrypt::decrypt_password, encrypt::encrypt_password};
 
@@ -12,7 +13,10 @@ pub fn test_encryption_decryption(_args: &Vec<String>) {
 
     let bytes = general_purpose::STANDARD.decode(data.cipher_text.as_ref().unwrap());
 
-    let decrypted = decrypt_password(MASTER_PASSWORD, &data.salt, &data.nonce, bytes.unwrap().as_ref());
+    let nonce = general_purpose::STANDARD.decode(&data.nonce);
+    let nonce = GenericArray::from_slice(nonce.as_ref().unwrap());
+
+    let decrypted = decrypt_password(MASTER_PASSWORD, &data.salt, nonce, bytes.unwrap().as_ref());
     let decrypted = decrypted.unwrap().unwrap();
     println!("{}", decrypted);
 
