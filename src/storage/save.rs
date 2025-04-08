@@ -1,31 +1,14 @@
-use std::{collections::HashMap, fs::OpenOptions, io::{Read, Write}};
+use std::{collections::HashMap, fs::OpenOptions, io::Write};
 use crate::{constants, encryption::encrypt::EncryptedPassword};
+
+use super::read::read_saved_passwords;
 
 pub fn save_passwords_to_disk(passwords: &mut HashMap<String, EncryptedPassword>) -> Result<(), ()> {
 
-    let file = OpenOptions::new().read(true).write(true).open(constants::FILE_NAME);
-    let mut file = match file {
-        Ok(f) => f,
-        Err(_) => return Err(())
-    };
-
-    let mut contents = String::new();
-    match file.read_to_string(&mut contents) {
-        Ok(_) => {},
-        Err(_) => {
-            eprintln!("Error reading stored passwords in {}!", constants::FILE_NAME);
-            return Err(());
-        }
-    }
-
-    // read stored passwords
-    let contents = serde_json::from_slice(contents.as_bytes());
-    let contents: HashMap<String, EncryptedPassword> = match contents {
+    let contents = read_saved_passwords();
+    let contents = match contents {
         Ok(v) => v,
-        Err(_) => {
-            eprintln!("Error while reading passwords to store new passwords in {}!", constants::FILE_NAME);
-            return Err(());
-        }
+        Err(_) => return Err(())
     };
 
     // update current passwords only if it is not already in the current passwords hashmap
@@ -40,6 +23,15 @@ pub fn save_passwords_to_disk(passwords: &mut HashMap<String, EncryptedPassword>
     let all_passwords = serde_json::to_string_pretty(&passwords);
     match all_passwords {
         Ok(v) => {
+            let file = OpenOptions::new().read(true).write(true).open(constants::FILE_NAME);
+            let mut file = match file {
+                Ok(f) => f,
+                Err(_) => {
+                    eprintln!("Error while opening {} to store passwords!", constants::FILE_NAME);
+                    return Err(());
+                }
+            };
+
             match file.write_all(v.as_bytes()) {
                 Ok(_) => Ok(()),
                 Err(_) => {
