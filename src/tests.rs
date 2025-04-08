@@ -1,11 +1,13 @@
+use std::collections::HashMap;
+
 use aes_gcm::aead::generic_array::GenericArray;
 use base64::{engine::general_purpose, Engine};
-use crate::encryption::{decrypt::decrypt_password, encrypt::encrypt_password};
+use crate::{encryption::{decrypt::decrypt_password, encrypt::{encrypt_password, EncryptedPassword}}, storage::save::save_passwords_to_disk};
 
-pub fn test_encryption_decryption(_args: &Vec<String>) {
+const MASTER_PASSWORD: &str = "happy birthday";
+const APPLICATION_PASSWORD: &str = "hello123!";
 
-    const MASTER_PASSWORD: &str = "happy birthday";
-    const APPLICATION_PASSWORD: &str = "hello123!";
+pub fn test_encryption_decryption() {
 
     let data = encrypt_password(MASTER_PASSWORD, APPLICATION_PASSWORD); 
     let data = data.unwrap();
@@ -21,4 +23,14 @@ pub fn test_encryption_decryption(_args: &Vec<String>) {
     println!("{}", decrypted);
 
     assert!(APPLICATION_PASSWORD == decrypted);
+}
+
+pub fn test_password_saving(passwords: &mut HashMap<String, EncryptedPassword>) {
+    let data = encrypt_password(MASTER_PASSWORD, APPLICATION_PASSWORD);
+    let data = data.unwrap();
+    
+    passwords.insert(String::from("testing application"), data);
+    save_passwords_to_disk(passwords).unwrap();
+
+    println!("\n{:?}", passwords);
 }

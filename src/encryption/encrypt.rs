@@ -3,7 +3,7 @@ use base64::{engine::general_purpose, Engine};
 use serde::{Deserialize, Serialize};
 use super::{kdf::generate_secure_key, nonce::generate_nonce, salt::generate_salt};
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct EncryptedPassword {
     pub salt: [u8; 16],
     pub secure_key: [u8; 32],

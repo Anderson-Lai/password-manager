@@ -3,21 +3,23 @@ mod tests;
 mod storage;
 mod constants;
 use std::env;
-use storage::init::init_file;
-use tests::test_encryption_decryption;
+use storage::init::init_data;
+use tests::{test_encryption_decryption, test_password_saving};
 
 fn main() {
-    let file = init_file();
-    if let Err(_) = file {
+    let passwords = init_data();
+    if let Err(_) = passwords {
         eprintln!("passwords.json could not be created; Exiting program now!");
         return;
     }
+    let mut passwords = passwords.unwrap();
 
     let args: Vec<String> = env::args().collect();
 
     #[cfg(debug_assertions)]
     {
-        test_encryption_decryption(&args); 
+        test_encryption_decryption(); 
+        test_password_saving(&mut passwords);
     }
 
     if args.len() <= 1 {
