@@ -2,6 +2,8 @@ use std::string::FromUtf8Error;
 use aes_gcm::{aead::{consts::U12, generic_array::GenericArray, Aead}, Aes256Gcm, KeyInit};
 use super::kdf::generate_secure_key;
 
+// function will return Err() if the master password used to decrypt is different from
+// the master password used to encrypt
 pub fn decrypt_ciphertext(nonce: &GenericArray<u8, U12>, secure_key: &[u8; 32], cipher_text: &Vec<u8>) 
 -> Result<Option<String>, FromUtf8Error>
 {
