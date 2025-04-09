@@ -1,6 +1,5 @@
 use std::string::FromUtf8Error;
 use aes_gcm::{aead::{consts::U12, generic_array::GenericArray, Aead}, Aes256Gcm, KeyInit};
-
 use super::kdf::generate_secure_key;
 
 pub fn decrypt_ciphertext(nonce: &GenericArray<u8, U12>, secure_key: &[u8; 32], cipher_text: &Vec<u8>) 

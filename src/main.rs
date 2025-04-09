@@ -2,6 +2,7 @@ mod encryption;
 mod tests;
 mod storage;
 mod constants;
+mod base64;
 use std::env;
 use storage::init::init_data;
 use tests::{test_encryption_decryption, test_password_saving};

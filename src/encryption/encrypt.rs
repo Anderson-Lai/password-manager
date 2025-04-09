@@ -1,6 +1,6 @@
 use aes_gcm::{aead::{consts::U12, generic_array::GenericArray, Aead}, Aes256Gcm, KeyInit};
-use base64::{engine::general_purpose, Engine};
 use serde::{Deserialize, Serialize};
+use crate::base64::base64_encode;
 use super::{kdf::generate_secure_key, nonce::generate_nonce, salt::generate_salt};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -13,8 +13,8 @@ pub struct EncryptedPassword {
 impl EncryptedPassword {
     pub fn new(salt: &[u8; 16], nonce: &GenericArray<u8, U12>, cipher_text: Option<String>) -> Self {
         EncryptedPassword {
-            salt: general_purpose::STANDARD.encode(salt),
-            nonce: general_purpose::STANDARD.encode(nonce.to_vec()),
+            salt: base64_encode(salt), 
+            nonce: base64_encode(nonce), 
             cipher_text
         }
     }
@@ -50,7 +50,7 @@ fn generate_ciphertext(plain_text: &str, secure_key: &[u8; 32], nonce: &GenericA
 
     let res = cipher.encrypt(nonce, plain_text.as_bytes());
     match res {
-        Ok(v) => Some(general_purpose::STANDARD.encode(v)),
+        Ok(v) => Some(base64_encode(v)),
         Err(_) => {
             eprintln!("Error while encrypting application password!");
             None
