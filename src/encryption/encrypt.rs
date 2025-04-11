@@ -1,6 +1,6 @@
 use aes_gcm::{aead::{consts::U12, generic_array::GenericArray, Aead}, Aes256Gcm, KeyInit};
 use serde::{Deserialize, Serialize};
-use crate::base64::base64_encode;
+use crate::base64::encode::base64_encode;
 use super::{kdf::generate_secure_key, nonce::generate_nonce, salt::generate_salt};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
