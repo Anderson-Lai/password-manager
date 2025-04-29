@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::{commands::{handle_create::{handle_create, handle_random_create}, handle_help::handle_help, handle_read::handle_read}, encryption::encrypt::EncryptedPassword};
+use crate::{commands::{handle_create::{handle_create, handle_random_create}, handle_help::handle_help, handle_list::handle_list, handle_read::handle_read}, encryption::encrypt::EncryptedPassword};
 use super::get_master::get_master_password;
 
 pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, EncryptedPassword>) -> Result<(), ()> {
@@ -57,7 +57,7 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
                         force_insert = true;
                     }
                     else {
-                        eprintln!("Unknown flag: {}", letter);
+                        eprintln!("Unknown flag: {}!", letter);
                         return Err(());
                     }
                 }
@@ -82,7 +82,7 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
                 print_to_terminal = true;
             }
             else {
-                eprintln!("Unknown flag: {}", arguments[3]);
+                eprintln!("Unknown flag: {}!", arguments[3]);
                 return Err(());
             }
         }
@@ -96,7 +96,8 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
         
     }
     else if command == "list" {
-
+        handle_list(passwords);
+        return Ok(());
     }
     else if command == "change-master" {
 
