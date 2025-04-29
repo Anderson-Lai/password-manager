@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::{commands::{handle_create::{handle_create, handle_random_create}, handle_help::handle_help, handle_list::handle_list, handle_read::handle_read}, encryption::encrypt::EncryptedPassword};
+use crate::{commands::{handle_create::{handle_create, handle_random_create}, handle_help::handle_help, handle_list::handle_list, handle_read::handle_read}, encryption::encrypted_password::EncryptedPassword, password::check_master_password::check_master_password};
 use super::get_master::get_master_password;
 
 pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, EncryptedPassword>) -> Result<(), ()> {
@@ -73,6 +73,18 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
         }
 
         let master_password = get_master_password();
+        match check_master_password(&master_password, passwords) {
+            Ok(v) => {
+                if !v {
+                    eprintln!("Incorrect master password!");
+                    return Err(());
+                }
+            }
+            Err(_) => {
+                eprintln!("Checking master password failed!");
+                return Err(());
+            }
+        }
 
         if generate_password {
             return handle_random_create(passwords, application_name, &master_password, length, include_special_characters, force_insert);
@@ -96,6 +108,18 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
         }
 
         let master_password = get_master_password();
+        match check_master_password(&master_password, passwords) {
+            Ok(v) => {
+                if !v {
+                    eprintln!("Incorrect master password!");
+                    return Err(());
+                }
+            }
+            Err(_) => {
+                eprintln!("Checking master password failed!");
+                return Err(());
+            }
+        }
 
         return handle_read(&master_password, &arguments[2], passwords, print_to_terminal);
     }

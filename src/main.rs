@@ -34,17 +34,17 @@ fn main() {
         }
     }
 
-    match save_passwords_to_disk(&mut passwords) {
-        Ok(_) => {},
-        Err(_) => {
-            eprintln!("Error while saving passwords to disk!");
-        }
-    }
-
     // #[cfg(debug_assertions)]
     // {
     //     test_encryption_decryption(); 
     //     test_password_saving(&mut passwords);
     //     test_crud(&mut passwords);
     // }
+
+    match save_passwords_to_disk(&mut passwords) {
+        Ok(_) => {},
+        Err(_) => {
+            eprintln!("Error while saving passwords to disk!");
+        }
+    }
 }

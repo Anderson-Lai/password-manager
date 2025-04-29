@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 use aes_gcm::aead::generic_array::GenericArray;
-use crate::{base64::decode::base64_decode, encryption::{decrypt::decrypt_password, encrypt::{encrypt_password, EncryptedPassword}}, password::{delete::delete_password, read::read_password, update::create_update_password}, storage::save::save_passwords_to_disk};
+use crate::{base64::decode::base64_decode, encryption::{decrypt::decrypt_password, encrypt::encrypt_password, encrypted_password::EncryptedPassword}, password::{delete::delete_password, read::read_password, update::create_update_password}, storage::save::save_passwords_to_disk};
 
 const MASTER_PASSWORD: &str = "happy birthday";
 const APPLICATION_PASSWORD: &str = "hello123!";

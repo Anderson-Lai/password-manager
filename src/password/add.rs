@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::encryption::encrypt::EncryptedPassword;
+use crate::encryption::encrypted_password::EncryptedPassword;
 
 pub fn add_password(application_name: &str, password: &EncryptedPassword, 
                     passwords: &mut HashMap<String, EncryptedPassword>, force_insert: bool)

@@ -1,6 +1,5 @@
 use std::collections::HashMap;
-use crate::encryption::encrypt::{encrypt_password, EncryptedPassword};
-
+use crate::encryption::{encrypt::encrypt_password, encrypted_password::EncryptedPassword}; 
 use super::create::create_random_password;
 
 pub fn update_password(application_name: &str, password: &EncryptedPassword, passwords: &mut HashMap<String, EncryptedPassword>) {

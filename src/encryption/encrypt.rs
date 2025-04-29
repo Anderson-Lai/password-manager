@@ -1,24 +1,6 @@
 use aes_gcm::{aead::{consts::U12, generic_array::GenericArray, Aead}, Aes256Gcm, KeyInit};
-use serde::{Deserialize, Serialize};
 use crate::base64::encode::base64_encode;
-use super::{kdf::generate_secure_key, nonce::generate_nonce, salt::generate_salt};
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct EncryptedPassword {
-    pub salt: String, // was a [u8; 16]
-    pub nonce: String,
-    pub cipher_text: Option<String>
-}
-
-impl EncryptedPassword {
-    pub fn new(salt: &[u8; 16], nonce: &GenericArray<u8, U12>, cipher_text: Option<String>) -> Self {
-        EncryptedPassword {
-            salt: base64_encode(salt), 
-            nonce: base64_encode(nonce), 
-            cipher_text
-        }
-    }
-}
+use super::{encrypted_password::EncryptedPassword, kdf::generate_secure_key, nonce::generate_nonce, salt::generate_salt};
 
 pub fn encrypt_password(master_password: &str, application_password: &str) -> Option<EncryptedPassword> {
     // generate a salt

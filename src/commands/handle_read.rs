@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::{encryption::encrypt::EncryptedPassword, password::read::read_password};
+use crate::{encryption::encrypted_password::EncryptedPassword, password::read::read_password};
 
 pub fn handle_read(master_password: &str, application_name: &str, 
     passwords: &mut HashMap<String, EncryptedPassword>, print_to_terminal: bool) 

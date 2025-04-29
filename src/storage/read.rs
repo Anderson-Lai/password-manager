@@ -1,5 +1,5 @@
 use std::{collections::HashMap, fs::OpenOptions, io::Read};
-use crate::{constants, encryption::encrypt::EncryptedPassword};
+use crate::{constants, encryption::encrypted_password::EncryptedPassword};
 
 pub fn read_saved_passwords() -> Result<HashMap<String, EncryptedPassword>, ()>{
     let file = OpenOptions::new().read(true).write(true).open(constants::FILE_NAME);

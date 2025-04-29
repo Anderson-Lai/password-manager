@@ -1,5 +1,5 @@
 use std::{collections::HashMap, fs::OpenOptions, io::Write, path::Path};
-use crate::{commands::{get_master::get_master_password, handle_create::handle_random_create}, constants, encryption::encrypt::EncryptedPassword};
+use crate::{commands::{get_master::get_master_password, handle_create::handle_random_create}, constants, encryption::encrypted_password::EncryptedPassword};
 use super::read::read_saved_passwords;
 
 pub fn init_data() -> Result<HashMap<String, EncryptedPassword>, ()> {

@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::encryption::encrypt::EncryptedPassword;
+use crate::encryption::encrypted_password::EncryptedPassword;
 
 pub fn delete_password(application_name: &str, passwords: &mut HashMap<String, EncryptedPassword>) {
     match passwords.remove(application_name) {

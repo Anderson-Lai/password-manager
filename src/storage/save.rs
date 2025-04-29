@@ -1,5 +1,5 @@
 use std::{collections::HashMap, fs::OpenOptions, io::Write};
-use crate::{constants, encryption::encrypt::EncryptedPassword};
+use crate::{constants, encryption::encrypted_password::EncryptedPassword};
 use super::read::read_saved_passwords;
 
 pub fn save_passwords_to_disk(passwords: &mut HashMap<String, EncryptedPassword>) -> Result<(), ()> {

@@ -1,6 +1,5 @@
 use std::collections::HashMap;
-
-use crate::{encryption::encrypt::{encrypt_password, EncryptedPassword}, password::{add::add_password, create::create_random_password}};
+use crate::{encryption::{encrypted_password::EncryptedPassword, encrypt::encrypt_password}, password::{add::add_password, create::create_random_password}};
 
 pub fn handle_create(passwords: &mut HashMap<String, EncryptedPassword>, application_name: &str,
     master_password: &str, application_password: &str, force_insert: bool) 
