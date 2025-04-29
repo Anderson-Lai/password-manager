@@ -9,7 +9,7 @@ mod platform;
 mod commands;
 use std::env;
 use commands::parse::parse_commands;
-use storage::init::init_data;
+use storage::{init::init_data, save::save_passwords_to_disk};
 // use tests::{test_crud, test_encryption_decryption, test_password_saving};
 
 fn main() {
@@ -27,7 +27,19 @@ fn main() {
         todo!("Open GUI");
     }
 
-    parse_commands(&args, &mut passwords);
+    match parse_commands(&args, &mut passwords) {
+        Ok(_) => {},
+        Err(_) => {
+            eprintln!("Error while parsing commands!");
+        }
+    }
+
+    match save_passwords_to_disk(&mut passwords) {
+        Ok(_) => {},
+        Err(_) => {
+            eprintln!("Error while saving passwords to disk!");
+        }
+    }
 
     // #[cfg(debug_assertions)]
     // {

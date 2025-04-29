@@ -6,3 +6,4 @@ pub mod handle_list;
 pub mod handle_read;
 pub mod handle_update;
 pub mod handle_help;
+pub mod get_master;

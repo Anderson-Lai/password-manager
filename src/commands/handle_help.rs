@@ -1,8 +1,7 @@
-use std::collections::HashMap;
-
+use std::collections::BTreeMap;
 
 pub fn handle_help() {
-    let mut documentation = HashMap::new();
+    let mut documentation = BTreeMap::new();
 
     let create_doc = "Either insert a password for an application or randomly generate one for the application\n
     \tUsage: ./password_manager create [application_name] [optional_password]\n
