@@ -75,6 +75,7 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
     }
     else if command == "help" {
         handle_help();
+        return Ok(());
     }
 
     eprintln!("Unknown command: {}", command);
