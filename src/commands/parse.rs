@@ -6,7 +6,11 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
     let command = &arguments[1];
 
     if command == "create" {
-        let master_password = get_master_password();
+        if arguments.len() < 3 {
+            eprintln!("Missing application name!");
+            return Err(());
+        }
+
         let application_name = &arguments[2];
         
         // determine if a random password needs to be generated
@@ -26,7 +30,7 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
         }
 
         while let Some(arg) = argument_iterator.next() {
-            if arg == "--length" {
+            if arg == "--length" || arg == "-l" {
                 length = match argument_iterator.next() {
                     Some(v) => match v.parse() {
                         Ok(value) => value,
@@ -56,13 +60,19 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
                     else if letter == 'f' {
                         force_insert = true;
                     }
+                    else if letter == 'l' {
+                        eprintln!("Combining '-l' with another flag is not supported!");
+                        return Err(());
+                    }
                     else {
-                        eprintln!("Unknown flag: {}!", letter);
+                        eprintln!("Unknown flag: -{}!", letter);
                         return Err(());
                     }
                 }
             }
         }
+
+        let master_password = get_master_password();
 
         if generate_password {
             return handle_random_create(passwords, application_name, &master_password, length, include_special_characters, force_insert);
@@ -73,8 +83,6 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
         }
     }
     else if command == "read" {
-        let master_password = get_master_password();
-
         // argument parsing
         let mut print_to_terminal = false;
         if arguments.len() > 3 {
@@ -86,6 +94,8 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
                 return Err(());
             }
         }
+
+        let master_password = get_master_password();
 
         return handle_read(&master_password, &arguments[2], passwords, print_to_terminal);
     }
