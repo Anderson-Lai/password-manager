@@ -10,7 +10,8 @@ pub fn handle_help() {
     \t -f --force: Force overwrite of existing password";
 
     let read_doc = "Write the password for an application to clipboard or stdout if clipboard is unavailable\n
-    \tUsage: ./password_manager read [application_name]";
+    \tUsage: ./password_manager read [application_name]\n
+    \t -p --print: Print the password to stdout";
 
     let update_doc = "Update the password for an application or randomly generate one for the application\n
     \tUsage: ./password_manager update [application_name] [optional_password]\n

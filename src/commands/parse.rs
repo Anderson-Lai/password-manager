@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::{commands::{handle_create::{handle_create, handle_random_create}, handle_help::handle_help}, encryption::encrypt::EncryptedPassword};
+use crate::{commands::{handle_create::{handle_create, handle_random_create}, handle_help::handle_help, handle_read::handle_read}, encryption::encrypt::EncryptedPassword};
 use super::get_master::get_master_password;
 
 pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, EncryptedPassword>) -> Result<(), ()> {
@@ -21,14 +21,17 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
         let mut force_insert = false;
 
         let mut argument_iterator = arguments.iter().skip(3);
+        if !generate_password {
+            argument_iterator = arguments.iter().skip(4);
+        }
+
         while let Some(arg) = argument_iterator.next() {
             if arg == "--length" {
                 length = match argument_iterator.next() {
                     Some(v) => match v.parse() {
-                        Ok(v) => v,
+                        Ok(value) => value,
                         Err(_) => {
-                            // safe to unwrap since it is in the Some arm already
-                            eprintln!("Invalid length argument: {}!", argument_iterator.next().unwrap());
+                            eprintln!("Invalid length argument: {}!", v);
                             return Err(());
                         }
                     },
@@ -45,8 +48,19 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
                 force_insert = true;
             }
             else {
-                eprintln!("Invalid argument: {}!", arg);
-                return Err(());
+                // since multiple flags may be put together, like in '-sf'
+                for letter in arg.chars().skip(1) {
+                    if letter == 's' {
+                        include_special_characters = true;
+                    }
+                    else if letter == 'f' {
+                        force_insert = true;
+                    }
+                    else {
+                        eprintln!("Unknown flag: {}", letter);
+                        return Err(());
+                    }
+                }
             }
         }
 
@@ -59,7 +73,21 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
         }
     }
     else if command == "read" {
+        let master_password = get_master_password();
 
+        // argument parsing
+        let mut print_to_terminal = false;
+        if arguments.len() > 3 {
+            if arguments[3] == "-p" || arguments[3] == "--print" {
+                print_to_terminal = true;
+            }
+            else {
+                eprintln!("Unknown flag: {}", arguments[3]);
+                return Err(());
+            }
+        }
+
+        return handle_read(&master_password, &arguments[2], passwords, print_to_terminal);
     }
     else if command == "update" {
 
