@@ -15,6 +15,7 @@ pub fn create_random_password(length: usize, include_special_characters: bool) -
     else {
         rng.sample_iter(&Alphanumeric)
             .take(length)
+            // char::from is a static function converting u8 to char
             .map(char::from)
             .collect()
     }
