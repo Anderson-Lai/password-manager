@@ -49,15 +49,14 @@ pub fn handle_change_master(master_password: &str, new_master_password: &str, pa
 
             Some((key.clone(), encrypted))
         }).collect();
+    
+    if failed.load(Ordering::Relaxed) {
+        return Err(());
+    }
 
     for (key, value) in new_passwords.iter() {
         passwords.insert(key.clone(), value.clone());
     }
 
-    if failed.load(Ordering::Relaxed) {
-        Err(())
-    }
-    else {
-        Ok(())
-    }
+    Ok(())
 }
