@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::{commands::{handle_create::{handle_create, handle_random_create}, handle_help::handle_help, handle_list::handle_list, handle_read::handle_read}, encryption::encrypted_password::EncryptedPassword, password::check_master_password::check_master_password};
+use crate::{commands::{handle_change_master::handle_change_master, handle_create::{handle_create, handle_random_create}, handle_help::handle_help, handle_list::handle_list, handle_read::handle_read}, encryption::encrypted_password::EncryptedPassword, password::check_master_password::check_master_password};
 use super::get_master::get_master_password;
 
 pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, EncryptedPassword>) -> Result<(), ()> {
@@ -134,7 +134,23 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
         return Ok(());
     }
     else if command == "change-master" {
+        let current_master_password = get_master_password();
+        match check_master_password(&current_master_password, passwords) {
+            Ok(v) => {
+                if !v {
+                    eprintln!("Incorrect master password!");
+                    return Err(());
+                }
+            }
+            Err(_) => {
+                eprintln!("Checking master password failed!");
+                return Err(());
+            }
+        }
 
+        println!("\nThis is your new master password.");
+        let new_master_password = get_master_password();
+        return handle_change_master(&current_master_password, &new_master_password, passwords);
     }
     else if command == "help" {
         handle_help();
