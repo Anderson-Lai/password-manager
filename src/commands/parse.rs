@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::{commands::{handle_change_master::handle_change_master, handle_create::{handle_create, handle_random_create}, handle_help::handle_help, handle_list::handle_list, handle_read::handle_read}, encryption::encrypted_password::EncryptedPassword, password::check_master_password::check_master_password};
+use crate::{commands::{handle_change_master::handle_change_master, handle_delete::handle_delete, handle_create::{handle_create, handle_random_create}, handle_help::handle_help, handle_list::handle_list, handle_read::handle_read}, encryption::encrypted_password::EncryptedPassword, password::check_master_password::check_master_password};
 use super::get_master::get_master_password;
 
 pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, EncryptedPassword>) -> Result<(), ()> {
@@ -127,7 +127,36 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
 
     }
     else if command == "delete" {
-        
+        if arguments.len() < 3 {
+            eprintln!("Missing application name!");
+            return Err(());
+        }
+
+        let application_name = &arguments[2];
+
+        let master_password = get_master_password();
+        match check_master_password(&master_password, passwords) {
+            Ok(value) => {
+                if !value {
+                    eprintln!("Incorrect master password!");
+                    return Err(());
+                }
+            }
+            Err(_) => {
+                eprintln!("Checking master password failed!");
+                return Err(());
+            }
+        }
+
+        match handle_delete(application_name, passwords) {
+            Some(_) => {
+                return Ok(());
+            },
+            None => {
+                eprintln!("Error while deleting password for {}!", application_name);
+                return Err(());
+            }
+        }
     }
     else if command == "list" {
         handle_list(passwords);
