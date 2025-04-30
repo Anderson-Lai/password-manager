@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::{commands::{handle_change_master::handle_change_master, handle_delete::handle_delete, handle_create::{handle_create, handle_random_create}, handle_help::handle_help, handle_list::handle_list, handle_read::handle_read}, encryption::encrypted_password::EncryptedPassword, password::check_master_password::check_master_password};
+use crate::{commands::{handle_change_master::handle_change_master, handle_create::{handle_create, handle_random_create}, handle_delete::handle_delete, handle_help::handle_help, handle_list::handle_list, handle_read::handle_read, handle_update::{handle_random_update, handle_update}}, encryption::encrypted_password::EncryptedPassword, password::check_master_password::check_master_password};
 use super::get_master::get_master_password;
 
 pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, EncryptedPassword>) -> Result<(), ()> {
@@ -15,7 +15,7 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
         
         // determine if a random password needs to be generated
         let mut generate_password = false;
-        if arguments.len() < 3 || arguments[3].chars().next().unwrap() == '-' {
+        if arguments.len() < 4 || arguments[3].chars().next().unwrap() == '-' {
             generate_password = true;
         }
 
@@ -124,7 +124,70 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
         return handle_read(&master_password, &arguments[2], passwords, print_to_terminal);
     }
     else if command == "update" {
+        if arguments.len() < 3 {
+            eprintln!("Missing application name!");
+            return Err(());
+        }
 
+        let application_name = &arguments[2];
+        
+        // determine if a random password needs to be generated
+        let mut generate_password = false;
+        if arguments.len() < 4 || arguments[3].chars().next().unwrap() == '-' {
+            generate_password = true;
+        }
+
+        // argument parsing
+        let mut length: usize = 16;
+        let mut include_special_characters = false;
+
+        let mut argument_iterator = arguments.iter().skip(3);
+        if !generate_password {
+            argument_iterator = arguments.iter().skip(4);
+        }
+
+        while let Some(arg) = argument_iterator.next() {
+            if arg == "--length" || arg == "-l" {
+                length = match argument_iterator.next() {
+                    Some(v) => match v.parse() {
+                        Ok(value) => value,
+                        Err(_) => {
+                            eprintln!("Invalid length argument: {}!", v);
+                            return Err(());
+                        }
+                    },
+                    None => {
+                        eprintln!("Missing length argument!");
+                        return Err(());
+                    }
+                };
+            }
+            else if arg == "-s" || arg == "--special" {
+                include_special_characters = true;
+            }
+        }
+
+        let master_password = get_master_password();
+        match check_master_password(&master_password, passwords) {
+            Ok(v) => {
+                if !v {
+                    eprintln!("Incorrect master password!");
+                    return Err(());
+                }
+            }
+            Err(_) => {
+                eprintln!("Checking master password failed!");
+                return Err(());
+            }
+        }
+
+        if generate_password {
+            return handle_random_update(master_password.as_str(), application_name, length, include_special_characters, passwords)
+        }
+        else {
+            let application_password = &arguments[3];
+            return handle_update(master_password.as_str(), application_password, application_name, passwords);
+        }
     }
     else if command == "delete" {
         if arguments.len() < 3 {
