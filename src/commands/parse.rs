@@ -52,6 +52,12 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
                 force_insert = true;
             }
             else {
+                // get rid of random / non-sensical arguments
+                if arg.chars().next().unwrap() != '-' {
+                    eprintln!("Unknown argument '{}'!", arg);
+                    return Err(());
+                }
+
                 // since multiple flags may be put together, like in '-sf'
                 for letter in arg.chars().skip(1) {
                     if letter == 's' {
@@ -165,6 +171,23 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
             else if arg == "-s" || arg == "--special" {
                 include_special_characters = true;
             }
+            else {
+                if arg.chars().next().unwrap() != '-' {
+                    eprintln!("Unknown argument '{}'!", arg);
+                    return Err(());
+                }
+
+                for letter in arg.chars().skip(1) {
+                    if letter == 'l' {
+                        eprintln!("Combining '-l' with another flag is not supported!");
+                        return Err(());
+                    }
+                    else {
+                        eprintln!("Unknown flag -{}!", letter);
+                        return Err(());
+                    }
+                }
+            }
         }
 
         let master_password = get_master_password();
@@ -192,6 +215,10 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
     else if command == "delete" {
         if arguments.len() < 3 {
             eprintln!("Missing application name!");
+            return Err(());
+        }
+        else if arguments.len() > 3 {
+            eprintln!("Unknown argument '{}'!", arguments[3]);
             return Err(());
         }
 
@@ -226,6 +253,11 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
         return Ok(());
     }
     else if command == "change-master" {
+        if arguments.len() > 2 {
+            eprintln!("Unknown argument '{}'!", arguments[2]);
+            return Err(());
+        }
+
         let current_master_password = get_master_password();
         match check_master_password(&current_master_password, passwords) {
             Ok(v) => {

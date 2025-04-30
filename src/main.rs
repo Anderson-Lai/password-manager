@@ -31,6 +31,9 @@ fn main() {
         Ok(_) => {},
         Err(_) => {
             eprintln!("Error while parsing commands!");
+            eprintln!("Changes will not be saved!");
+            eprintln!("Exiting now program now!");
+            return;
         }
     }
 
