@@ -1,4 +1,6 @@
-# A Fully Local and Open-Source Password Manager
+# Password-Manager
+
+Password-Manager is a fully local and open-source password manager written in Rust.
 
 ## Building
 
