@@ -108,7 +108,7 @@ pub fn parse_commands(arguments: &Vec<String>, passwords: &mut HashMap<String, E
                 print_to_terminal = true;
             }
             else {
-                eprintln!("Unknown flag: {}!", arguments[3]);
+                eprintln!("Unknown argument: {}!", arguments[3]);
                 return Err(());
             }
         }
