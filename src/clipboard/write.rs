@@ -1,9 +1,9 @@
 use copypasta::{ClipboardContext, ClipboardProvider};
-use crate::platform::linux::is_linux;
+use crate::platform::linux::IS_LINUX;
 
 pub fn write_to_clipboard(value: &str) -> Result<(), ()> {
 
-    if is_linux() {
+    if IS_LINUX {
         eprintln!("Clipboard writing for linux is not supported!");
         return Err(());
     }
